@@ -1,13 +1,4 @@
-class Main {
-  preload() {
-    this.load.image("player", "assets/player.png");
-    this.load.image("wallV", "assets/wallVertical.png");
-    this.load.image("wallH", "assets/wallHorizontal.png");
-    this.load.image("coin", "assets/coin.png");
-    this.load.image("background", "assets/background.png");
-    this.load.image("enemy", "assets/enemy.png");
-  }
-
+class Play {
   create() {
     this.player = this.physics.add.sprite(250, 170, "player");
     this.coin = this.physics.add.sprite(60, 130, "coin");
@@ -78,7 +69,7 @@ class Main {
   }
 
   playerDie() {
-    this.scene.start("main");
+    this.scene.start("menu", { score: this.score });
   }
 
   takeCoin() {
@@ -115,15 +106,3 @@ class Main {
     });
   }
 }
-
-let game = new Phaser.Game({
-  width: 500,
-  height: 340,
-  backgroundColor: "#3498db",
-  physics: { default: "arcade" },
-  parent: "game",
-});
-
-game.scene.add("main", Main);
-
-game.scene.start("main");
