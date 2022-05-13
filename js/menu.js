@@ -3,16 +3,33 @@ class Menu {
     let score = data.score ? data.score : 0;
     this.add.image(250, 170, "background");
 
-    let nameLabel = this.add.text(250, 80, "Super Coin Box", {
+    let nameLabel = this.add.text(250, -50, "Super Coin Box", {
       font: "50px Arial",
       fill: "#fff",
     });
     nameLabel.setOrigin(0.5, 0.5);
 
-    let scoreText = "score " + score;
+    this.tweens.add({
+      targets: nameLabel,
+      y: 80,
+      duration: 1000,
+      ease: "bounce.out",
+    });
+
+    if (localStorage.getItem("bestScore") === null) {
+      localStorage.setItem("bestScore", 0);
+    }
+
+    if (score > localStorage.getItem("bestScore")) {
+      localStorage.setItem("bestScore", score);
+    }
+
+    let scoreText =
+      "score " + score + "\nbest score: " + localStorage.getItem("bestScore");
     let scoreLabel = this.add.text(250, 170, scoreText, {
       font: "25px Arial",
       fill: "#fff",
+      align: "center",
     });
     scoreLabel.setOrigin(0.5, 0.5);
 
@@ -22,6 +39,14 @@ class Menu {
       fill: "#fff",
     });
     startLabel.setOrigin(0.5, 0.5);
+
+    this.tweens.add({
+      targets: startLabel,
+      angle: { from: -2, to: 2 },
+      duration: 1000,
+      yoyo: true,
+      repeat: -1,
+    });
 
     this.upKey = this.input.keyboard.addKey("up");
   }

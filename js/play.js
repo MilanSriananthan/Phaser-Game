@@ -16,6 +16,34 @@ class Play {
       callback: () => this.addEnemy(),
       loop: true,
     });
+
+    this.jumpSound = this.sound.add("jump");
+    this.coinSound = this.sound.add("coin");
+    this.deadSound = this.sound.add("dead");
+
+    this.anims.create({
+      key: "right",
+      frames: this.anims.generateFrameNumbers("player", { frames: [1, 2] }),
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "left",
+      frames: this.anims.generateFrameNumbers("player", { frames: [3, 4] }),
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    let particles = this.add.particles("pixel");
+
+    this.emitter = particles.createEmitter({
+      quantity: 15,
+      speed: { min: -150, max: 150 },
+      scale: { start: 2, end: 0.1 },
+      lifespan: 800,
+      on: false,
+    });
   }
 
   update() {
@@ -34,20 +62,37 @@ class Play {
     }
     if (this.physics.overlap(this.player, this.enemies)) {
       this.playerDie();
+
+      let now = Date.now();
+
+      if (this.nextEnemy < now) {
+        let startDiff = 4000;
+        let endDiff = 1000;
+        let scoreToReachEndDiff = 100;
+
+        let progress = Math.min(this.score / scoreToReachEndDiff, 1);
+        let delay = startDiff - (startDiff - endDiff) * progress;
+        this.addEnemy();
+        this.nextEnemy = now + delay;
+      }
     }
   }
 
   movePlayer() {
     if (this.arrow.left.isDown) {
       this.player.body.velocity.x = -200;
+      this.player.anims.play("left", true);
     } else if (this.arrow.right.isDown) {
       this.player.body.velocity.x = 200;
+      this.player.anims.play("right", true);
     } else {
       this.player.body.velocity.x = 0;
+      this.player.setFrame(0);
     }
 
     if (this.arrow.up.isDown && this.player.body.onFloor()) {
       this.player.body.velocity.y = -320;
+      this.jumpSound.play();
     }
   }
 
@@ -69,13 +114,37 @@ class Play {
   }
 
   playerDie() {
-    this.scene.start("menu", { score: this.score });
+    //this.player.destroy();
+    this.deadSound.play();
+    this.cameras.main.shake(300, 0.02);
+    //this.cameras.main.flash(300);
+    this.emitter.setPosition(this.player.x, this.player.y);
+    this.emitter.explode();
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => this.scene.start("menu", { score: this.score }),
+    });
+    //this.scene.start("menu", { score: this.score });
   }
 
   takeCoin() {
     this.score += 5;
     this.scoreLabel.setText("score: " + this.score);
+    this.coinSound.play();
     this.updateCoinPosition();
+    this.coin.setScale(0);
+    this.tweens.add({
+      targets: this.coin,
+      scale: 1,
+      duration: 300,
+    });
+
+    this.tweens.add({
+      targets: this.player,
+      scale: 1.3,
+      duration: 100,
+      yoyo: true,
+    });
   }
 
   updateCoinPosition() {
@@ -99,10 +168,10 @@ class Play {
     enemy.body.gravity.y = 500;
     enemy.body.velocity.x = Phaser.Math.RND.pick([-100, 100]);
     enemy.body.bounce.x = 1;
-
-    this.time.addEvent({
-      delay: 10000,
-      callback: () => enemy.destroy(),
-    });
+    this.nextEnemy = 0;
+    //this.time.addEvent({
+    //  delay: 10000,
+    //  callback: () => enemy.destroy(),
+    //});
   }
 }
