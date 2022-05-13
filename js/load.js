@@ -8,8 +8,10 @@ class Load {
     });
 
     this.load.image("coin", "assets/coin.png");
-    this.load.image("wallV", "assets/wallVertical.png");
-    this.load.image("wallH", "assets/wallHorizontal.png");
+    //this.load.image("wallV", "assets/wallVertical.png");
+    //this.load.image("wallH", "assets/wallHorizontal.png");
+    this.load.image("tileset", 'assets/tileset.png')
+    this.load.tilemapTiledJSON('map', 'assets/map.json')
     this.load.image("enemy", "assets/enemy.png");
     this.load.image("pixel", "assets/pixel.png");
 

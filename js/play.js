@@ -48,12 +48,13 @@ class Play {
 
   update() {
     //this.player.angle++;
-    this.movePlayer();
+
     this.physics.collide(this.player, this.walls);
     this.physics.collide(this.enemies, this.walls);
     if (!this.player.active) {
       return;
     }
+    this.movePlayer();
     if (this.player.y > 340 || this.player < 0) {
       this.playerDie();
     }
@@ -90,31 +91,36 @@ class Play {
       this.player.setFrame(0);
     }
 
-    if (this.arrow.up.isDown && this.player.body.onFloor()) {
+    if (this.arrow.up.isDown) {
       this.player.body.velocity.y = -320;
       this.jumpSound.play();
     }
   }
 
   createWorld() {
-    this.walls = this.physics.add.staticGroup();
+    //this.walls = this.physics.add.staticGroup();
 
-    this.walls.create(10, 170, "wallV");
-    this.walls.create(490, 170, "wallV");
+    //this.walls.create(10, 170, "wallV");
+    //this.walls.create(490, 170, "wallV");
 
-    this.walls.create(50, 10, "wallH");
-    this.walls.create(450, 10, "wallH");
-    this.walls.create(50, 330, "wallH");
-    this.walls.create(450, 330, "wallH");
+    //this.walls.create(50, 10, "wallH");
+    //this.walls.create(450, 10, "wallH");
+    //this.walls.create(50, 330, "wallH");
+    //this.walls.create(450, 330, "wallH");
 
-    this.walls.create(0, 170, "wallH");
-    this.walls.create(500, 170, "wallH");
-    this.walls.create(250, 90, "wallH");
-    this.walls.create(250, 250, "wallH");
+    //this.walls.create(0, 170, "wallH");
+    //this.walls.create(500, 170, "wallH");
+    //this.walls.create(250, 90, "wallH");
+    //this.walls.create(250, 250, "wallH");
+
+    let map = this.add.tilemap("map");
+    let tileset = map.addTilesetImage("tileset", "tileset");
+    this.walls = map.createStaticLayer("Tile Layer 1", tileset);
+    this.walls.setCollision(1);
   }
 
   playerDie() {
-    //this.player.destroy();
+    this.player.destroy();
     this.deadSound.play();
     this.cameras.main.shake(300, 0.02);
     //this.cameras.main.flash(300);
